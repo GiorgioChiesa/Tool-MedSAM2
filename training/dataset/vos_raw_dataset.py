@@ -133,7 +133,7 @@ class PNGRawDataset(VOSRawDataset):
                 video_mask_root, self.single_object_mode
             )
 
-        all_frames = sorted(glob.glob(os.path.join(video_frame_root, "*.jpg")))
+        all_frames = sorted(glob.glob(os.path.join(video_frame_root, "*.png")))
         if self.truncate_video > 0:
             all_frames = all_frames[: self.truncate_video]
         frames = []

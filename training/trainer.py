@@ -1015,7 +1015,7 @@ class Trainer:
         if self.meters_conf:
             self.meters = instantiate(self.meters_conf, _convert_="all")
 
-        self.scaler = torch.amp.GradScaler(
+        self.scaler = torch.cuda.amp.GradScaler(
             self.device,
             enabled=self.optim_conf.amp.enabled if self.optim_conf else False,
         )

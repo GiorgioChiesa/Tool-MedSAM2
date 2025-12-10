@@ -3,7 +3,7 @@
 scratch:
   resolution: 512
   train_video_batch_size: 8
-  num_train_workers: 15
+  num_train_workers: 1 # original 15
   num_frames: 8
   max_num_objects: 5
   base_lr: 5.0e-5
@@ -220,7 +220,6 @@ trainer:
                 _target_: training.dataset.vos_raw_dataset.PNGRawDataset
                 img_folder: /scratch/data/SyntDataset/videos
                 gt_folder: /scratch/data/SyntDataset/videos_mask
-                single_object_mode: true
               sampler:
                 _target_: training.dataset.vos_sampler.RandomUniformSampler
                 num_frames: ${scratch.num_frames}

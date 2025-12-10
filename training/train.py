@@ -20,6 +20,14 @@ from hydra.utils import instantiate
 from iopath.common.file_io import g_pathmgr
 from omegaconf import OmegaConf
 
+print(f"Current working directory: {os.getcwd()}")
+if os.getcwd() not in sys.path:
+    sys.path.append(os.getcwd())
+
+if "training" in os.getcwd():
+    os.chdir("..")  
+    print(f"Changed working directory to: {os.getcwd()}")
+
 from training.utils.train_utils import makedir, register_omegaconf_resolvers
 
 os.environ["HYDRA_FULL_ERROR"] = "1"
