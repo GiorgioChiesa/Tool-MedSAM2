@@ -50,9 +50,13 @@ class BatchedVideoDatapoint:
     metadata: BatchedVideoMetaData
 
     dict_key: str
+    batch_size = List[int]
 
     def pin_memory(self, device=None):
-        return self.apply(torch.Tensor.pin_memory, device=device)
+        if device is not None:
+            return self.apply(torch.Tensor.pin_memory).to(device)
+        return self.apply(torch.Tensor.pin_memory)
+        return self.apply(torch.Tensor.pin_memory, device=device) # Solo questa riga in originale
 
     @property
     def num_frames(self) -> int:
@@ -109,6 +113,7 @@ class VideoDatapoint:
     frames: List[Frame]
     video_id: int
     size: Tuple[int, int]
+    # batch_size: List[int]
 
 
 def collate_fn(
@@ -173,6 +178,8 @@ def collate_fn(
         metadata=BatchedVideoMetaData(
             unique_objects_identifier=objects_identifier,
             frame_orig_size=frame_orig_size,
+            batch_size=[T],
+            
         ),
         dict_key=dict_key,
         batch_size=[T],

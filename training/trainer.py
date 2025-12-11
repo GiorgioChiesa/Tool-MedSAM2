@@ -53,6 +53,7 @@ from training.utils.train_utils import (
     setup_distributed_backend,
 )
 
+torch.autograd.set_detect_anomaly(True) # ADDED by me
 
 CORE_LOSS_KEY = "core_loss"
 
