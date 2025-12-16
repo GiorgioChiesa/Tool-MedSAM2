@@ -220,6 +220,7 @@ trainer:
                 _target_: training.dataset.vos_raw_dataset.PNGRawDataset
                 img_folder: /scratch/data/SyntDataset/videos
                 gt_folder: /scratch/data/SyntDataset/videos_mask
+                single_object_mode: false # if true, each frame is a folder with obj mask inside
               sampler:
                 _target_: training.dataset.vos_sampler.RandomUniformSampler
                 num_frames: ${scratch.num_frames}

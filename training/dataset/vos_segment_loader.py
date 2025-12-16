@@ -13,6 +13,7 @@ import pandas as pd
 import torch
 
 from PIL import Image as PILImage
+from cv2 import imread, imwrite, resize
 
 try:
     from pycocotools import mask as mask_utils
@@ -132,11 +133,13 @@ class PalettisedPNGSegmentLoader:
 
         # load the mask
         masks = PILImage.open(mask_path).convert("P")
+        # masks = imread(mask_path)
+
         masks = np.array(masks)
 
         object_id = pd.unique(masks.flatten())
         object_id = object_id[object_id != 0]  # remove background (0)
-
+        print(f"Loaded mask from {mask_path}, found {len(object_id)} objects: {object_id}")
         # convert into N binary segmentation masks
         binary_segments = {}
         for i in object_id:

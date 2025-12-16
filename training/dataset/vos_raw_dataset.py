@@ -126,6 +126,9 @@ class PNGRawDataset(VOSRawDataset):
 
         video_mask_root = os.path.join(self.gt_folder, video_name)
 
+        assert os.path.exists(video_frame_root), f"Frame folder {video_frame_root} does not exist"
+        assert os.path.exists(video_mask_root), f"Mask folder {video_mask_root} does not exist"
+
         if self.is_palette:
             segment_loader = PalettisedPNGSegmentLoader(video_mask_root, sample_rate=self.sample_rate)
         else:
