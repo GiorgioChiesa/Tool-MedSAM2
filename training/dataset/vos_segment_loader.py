@@ -139,7 +139,7 @@ class PalettisedPNGSegmentLoader:
 
         object_id = pd.unique(masks.flatten())
         object_id = object_id[object_id != 0]  # remove background (0)
-        print(f"Loaded mask from {mask_path}, found {len(object_id)} objects: {object_id}")
+        # print(f"Loaded mask from {mask_path}, found {len(object_id)} objects: {object_id}")
         # convert into N binary segmentation masks
         binary_segments = {}
         for i in object_id:

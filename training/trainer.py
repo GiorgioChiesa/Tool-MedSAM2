@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Mapping, Optional
 
 import numpy as np
-
+import wandb
 import torch
 import torch.distributed as dist
 import torch.nn as nn
@@ -125,6 +125,13 @@ class CheckpointConf:
             self.initialize_after_preemption = with_skip_saving
         return self
 
+@dataclass
+class WandBConf:
+    name: str = "sam2.1_hiera_tiny_finetune512"
+    project: str = "sam2_finetune_medical"
+    entity: str = "giorgiounito"  # set your wandb entity here
+    log_model_checkpoints: bool = False
+    should_log: bool = False
 
 @dataclass
 class LoggingConf:
@@ -137,6 +144,8 @@ class LoggingConf:
     log_visual_frequency: int = 100
     scalar_keys_to_log: Optional[Dict[str, Any]] = None
     log_batch_stats: bool = False
+    wandb: Optional[WandBConf] = None
+
 
 
 class Trainer:
@@ -183,6 +192,7 @@ class Trainer:
         distributed = DistributedConf(**distributed or {})
         cuda = CudaConf(**cuda or {})
         self.where = 0.0
+        self.wandb_run = None
 
         self._infer_distributed_backend_if_none(distributed, accelerator)
 
@@ -228,6 +238,19 @@ class Trainer:
         self.load_checkpoint()
         self._setup_ddp_distributed_training(distributed, accelerator)
         barrier()
+
+        if hasattr(self.logging_conf, 'wandb') and self.logging_conf.wandb.should_log:
+            os.makedirs(self.logging_conf.wandb.log_dir, exist_ok=True)
+            self.wandb_run = wandb.init(
+                project=self.logging_conf.wandb.project,
+                entity=self.logging_conf.wandb.entity,
+                dir=self.logging_conf.wandb.log_dir,
+                name=self.logging_conf.wandb.name,
+                # reinit=True,
+                # settings=wandb.Settings(start_method="fork"),
+            )
+            
+
 
     def _setup_timers(self):
         """
@@ -532,7 +555,7 @@ class Trainer:
             barrier()
             outs = self.train_epoch(dataloader)
             self.logger.log_dict(outs, self.epoch)  # Logged only on rank 0
-
+            self.wandb_run.log(outs) if self.wandb_run is not None else None
             # log train to text file.
             if self.distributed_rank == 0:
                 with g_pathmgr.open(
@@ -573,7 +596,7 @@ class Trainer:
         del dataloader
         gc.collect()
         self.logger.log_dict(outs, self.epoch)  # Logged only on rank 0
-
+        self.wandb_run.log(outs) if self.wandb_run is not None else None
         if self.distributed_rank == 0:
             with g_pathmgr.open(
                 os.path.join(self.logging_conf.log_dir, "val_stats.json"),
@@ -884,7 +907,7 @@ class Trainer:
                 raise FloatingPointError(error_msg)
             else:
                 return
-
+    
         self.scaler.scale(loss).backward()
         loss_mts[loss_key].update(loss.item(), batch_size)
         for extra_loss_key, extra_loss in extra_losses.items():
@@ -1017,7 +1040,8 @@ class Trainer:
             self.meters = instantiate(self.meters_conf, _convert_="all")
 
         self.scaler = torch.cuda.amp.GradScaler(
-            self.device,
+            # init_scale=self.optim_conf.amp.init_scale if self.optim_conf else 2**16,
+            #self.device,
             enabled=self.optim_conf.amp.enabled if self.optim_conf else False,
         )
 

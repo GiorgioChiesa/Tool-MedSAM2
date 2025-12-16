@@ -2,9 +2,9 @@
 
 scratch:
   resolution: 512
-  train_video_batch_size: 8
+  train_video_batch_size: 4 # original 8
   num_train_workers: 1 # original 15
-  num_frames: 8
+  num_frames: 8  # original 8
   max_num_objects: 5
   base_lr: 5.0e-5
   vision_lr: 3.0e-05
@@ -55,7 +55,7 @@ vos:
 
 trainer:
   _target_: training.trainer.Trainer
-  mode: train_only
+  mode: train
   max_epochs: ${times:${scratch.num_epochs},${scratch.phases_per_epoch}}
   accelerator: cuda
   seed_value: 123
@@ -368,6 +368,13 @@ trainer:
       should_log: True
     log_dir: ${launcher.experiment_log_dir}/logs
     log_freq: 10
+    wandb:
+      name: ${launcher.run_name}
+      project: "sam2_finetune_medical"
+      entity: "eidos-giorgio"  # set your wandb entity here
+      log_dir:  ${launcher.experiment_log_dir}/wandb_logs
+      log_model_checkpoints: false
+      should_log: true
 
   # initialize from a SAM 2 checkpoint
   checkpoint:
@@ -389,7 +396,7 @@ launcher:
   num_nodes: 1
   gpus_per_node: 4
   experiment_log_dir: exp_log # Path to log directory, defaults to ./sam2_logs/${config_name}
-
+  run_name: Provolone # Name of the run, used in logging
 # SLURM args if running on a cluster
 submitit:
   partition: gpu_bwanggroup

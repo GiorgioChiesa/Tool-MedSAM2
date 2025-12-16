@@ -288,7 +288,7 @@ if __name__ == "__main__":
     if args.dataset_path is not None:
         cfg.dataset.folder = args.dataset_path
     if args.output_path is not None:
-        
         cfg.launcher.experiment_log_dir = args.output_path
+        cfg.launcher.run_name = os.path.basename(args.output_path)
     
     main(args, cfg)
