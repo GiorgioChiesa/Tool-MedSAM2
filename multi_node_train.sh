@@ -23,6 +23,8 @@ sock.close()
 print(free_port)
 EOF
 )
+export SLURM_GPUS_ON_NODE = 4
+export SLURM_NNODES = 1
 
 # Print some information
 echo "Master node: $MASTER_ADDR"
@@ -31,7 +33,9 @@ echo "Number of nodes: $SLURM_NNODES"
 echo "GPUs per node: $SLURM_GPUS_ON_NODE"
 
 config=configs/sam2.1_hiera_tiny_finetune512.yaml
-output_path=./exp_log/mnode_tiny
+
+output_path=/scratch/SAMS/MedSAM2v2/MedSAM2/exp_log/MultiProvolone
+
 
 # Function to run the training script
 srun --exclusive python training/train.py \

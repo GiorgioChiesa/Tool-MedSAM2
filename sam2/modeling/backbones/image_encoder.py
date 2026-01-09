@@ -117,7 +117,7 @@ class FpnNeck(nn.Module):
             if i in self.fpn_top_down_levels and prev_features is not None:
                 top_down_features = F.interpolate(
                     prev_features.to(dtype=torch.float32),
-                    scale_factor=2.0,
+                    scale_factor= lateral_features.shape[3] /prev_features.shape[3], # 2.0
                     mode=self.fpn_interp_model,
                     align_corners=(
                         None if self.fpn_interp_model == "nearest" else False
@@ -129,6 +129,7 @@ class FpnNeck(nn.Module):
                     prev_features /= 2
             else:
                 prev_features = lateral_features
+            # print(f"i={i}, prev_features shape: {prev_features.shape}, lateral_features shape: {lateral_features.shape}, top_down_features shape: {top_down_features.shape}" if 'top_down_features' in locals() else f"i={i}, prev_features shape: {prev_features.shape}, lateral_features shape: {lateral_features.shape}, top_down_features not computed")
             x_out = prev_features
             out[i] = x_out
             pos[i] = self.position_encoding(x_out).to(x_out.dtype)
