@@ -2,7 +2,7 @@
 export PATH=/usr/local/cuda/bin:$PATH
 # make sure the checkpoint is under `MedSAM2/checkpoints/sam2.1_hiera_tiny.pt`
 config=configs/sam2.1_hiera_tiny_finetune512_gptmodel.yaml
-output_path=/scratch/SAMS/MedSAM2v2/MedSAM2/exp_log/GPT-model
+output_path=/scratch/SAMS/MedSAM2v2/MedSAM2/exp_log/EvalSAM2-GPTmodel
 
 # Function to run the training script
 CUDA_VISIBLE_DEVICES=0,1 python3 training/train.py \

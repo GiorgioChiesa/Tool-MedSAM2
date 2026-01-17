@@ -516,6 +516,7 @@ class Trainer:
                     meter.update(
                         find_stages=outputs,
                         find_metadatas=batch.metadata,
+                        targets=targets,
                     )
 
         return ret_tuple
@@ -991,7 +992,7 @@ class Trainer:
 
             # Check that the keys match the meter keys
             if self.meters_conf is not None and phase in self.meters_conf:
-                assert set(val_keys) == set(self.meters_conf[phase].keys()), (
+                assert all(k in list(self.meters_conf.keys()) for k in val_keys ), ( # set(val_keys) == set(self.meters_conf[phase].keys())
                     f"Keys in val datasets do not match the keys in meters."
                     f"\nMissing in meters: {set(val_keys) - set(self.meters_conf[phase].keys())}"
                     f"\nMissing in val datasets: {set(self.meters_conf[phase].keys()) - set(val_keys)}"

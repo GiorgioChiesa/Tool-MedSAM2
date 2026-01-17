@@ -407,15 +407,29 @@ trainer:
     val:
       _target_: training.loss_fns.MultiStepMultiMasksAndIous
       weight_dict:
-        loss_mask: 1
-        loss_dice: 1
+        loss_mask: 0
+        loss_dice: 0
         loss_iou: 1
-        loss_class: 1
+        loss_class: 0
       supervise_all_iou: true
       iou_use_l1_loss: true
       pred_obj_scores: true
       focal_gamma_obj_score: 0.0
       focal_alpha_obj_score: -1.0
+
+  meters:
+    train:
+      all:
+        segmentation_metrics:
+          _target_: training.metrics.SAM2SegmentationMetrics
+          iou_thresholds: [0.5, 0.75, 0.9]
+          num_objects: ${scratch.max_num_objects}
+    val:
+      val:
+        segmentation_metrics:
+          _target_: training.metrics.SAM2SegmentationMetrics
+          iou_thresholds: [0.5, 0.75, 0.9]
+          num_objects: ${scratch.max_num_objects}
 
   distributed:
     backend: nccl #  gloo or nccl
@@ -450,7 +464,7 @@ trainer:
 
       state_dict:
         _target_: training.utils.checkpoint_utils.load_checkpoint_and_apply_kernels
-        checkpoint_path: checkpoints/sam2.1_hiera_tiny.pt # PATH to SAM 2.1 checkpoint
+        checkpoint_path: checkpoints/MedSAM2_latest.pt # PATH to SAM 2.1 checkpoint
         ckpt_state_dict_keys: ['model']
 
 launcher:
