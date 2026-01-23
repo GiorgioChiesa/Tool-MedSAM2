@@ -524,7 +524,7 @@ class Trainer:
     def run(self):
         assert self.mode in ["train", "train_only", "val"]
         if self.mode == "train":
-            if self.epoch > 0:
+            if self.epoch >= 0:
                 logging.info(f"Resuming training from epoch: {self.epoch}")
                 # resuming from a checkpoint
                 if self.is_intermediate_val_epoch(self.epoch - 1):

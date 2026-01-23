@@ -6,8 +6,8 @@ scratch:
   num_train_workers: 1 # original 15
   num_frames: 4  # original 8
   max_num_objects: 5
-  base_lr: 5.0e-5
-  vision_lr: 3.0e-05
+  base_lr: 5.0e-6 # original 1e-5
+  vision_lr: 3.0e-06 # original 3e-6
   phases_per_epoch: 1
   num_epochs: 75
 
@@ -395,7 +395,7 @@ trainer:
     all:
       _target_: training.loss_fns.MultiStepMultiMasksAndIous
       weight_dict:
-        loss_mask: 20
+        loss_mask: 5 # original 20
         loss_dice: 1
         loss_iou: 1
         loss_class: 1
